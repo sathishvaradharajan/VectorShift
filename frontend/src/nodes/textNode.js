@@ -1,5 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { Handle, Position } from "reactflow";
+import {
+  Handle,
+  Position,
+  useUpdateNodeInternals,
+} from "reactflow";
 import { useStore } from "../store";
 
 const VARIABLE_REGEX = /\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}/g;
@@ -22,19 +26,27 @@ function extractVariables(text) {
 export const TextNode = ({ id, data }) => {
   const [currText, setCurrText] = useState(data?.text || "{{input}}");
   const updateNodeField = useStore((s) => s.updateNodeField);
+
   const textareaRef = useRef(null);
+  const updateNodeInternals = useUpdateNodeInternals();
 
   const variables = extractVariables(currText);
 
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      textareaRef.current.style.height =
+        `${textareaRef.current.scrollHeight}px`;
     }
   }, [currText]);
 
+  useEffect(() => {
+    updateNodeInternals(id);
+  }, [variables, id, updateNodeInternals]);
+
   const handleChange = (e) => {
     const value = e.target.value;
+
     setCurrText(value);
     updateNodeField(id, "text", value);
   };
@@ -43,13 +55,13 @@ export const TextNode = ({ id, data }) => {
     <div
       style={{
         width: NODE_WIDTH,
+        minWidth: NODE_WIDTH,
         border: "1px solid #4a4a6a",
         borderRadius: 10,
         background: "linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%)",
         boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
         fontFamily: "'Inter', sans-serif",
         position: "relative",
-        minWidth: NODE_WIDTH,
       }}
     >
       {/* Header */}
@@ -108,6 +120,7 @@ export const TextNode = ({ id, data }) => {
             }}
           />
         </label>
+
         {variables.length > 0 && (
           <div
             style={{
@@ -135,7 +148,7 @@ export const TextNode = ({ id, data }) => {
         )}
       </div>
 
-      {/* Dynamic variable handles */}
+      {/* Dynamic Variable Handles */}
       {variables.map((v, i) => (
         <Handle
           key={`var-${v}`}
@@ -167,7 +180,7 @@ export const TextNode = ({ id, data }) => {
         </Handle>
       ))}
 
-      {/* Output handle */}
+      {/* Output Handle */}
       <Handle
         type="source"
         position={Position.Right}
