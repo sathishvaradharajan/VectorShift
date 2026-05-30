@@ -146,12 +146,6 @@ useEffect(() => {
 }, [currText]);
 ```
 
-The node width also widens based on the longest line (capped at 500px):
-```js
-const longestLine = Math.max(...lines.map((l) => l.length));
-const newWidth = Math.max(220, Math.min(500, longestLine * 8 + 60));
-```
-
 ### Feature 2: Variable Handles
 Variables are extracted with a regex:
 ```js
@@ -167,7 +161,7 @@ const VARIABLE_REGEX = /\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}/g;
 ### Important Things to Study
 - **`useRef` + `scrollHeight`** — the pattern for auto-resizing textareas
 - **`useEffect` dependencies** — re-run the resize whenever `currText` changes
-- **Regex named groups and `exec` in a loop** — how to extract all matches globally
+- **Regular expressions with exec() — extracting variables from text
 - **Dynamic ReactFlow handles** — you can render as many `<Handle>` elements as you want; ReactFlow tracks them by `id`
 
 ---
